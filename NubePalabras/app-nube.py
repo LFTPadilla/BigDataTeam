@@ -11,7 +11,7 @@ Created on 30/03/2020
 
 import matplotlib.pyplot as plt
 import pandas as pd
-from wordcloud import WordCloud, STOPWORDS
+
 from nltk.corpus import stopwords
 from nltk import word_tokenize
 from nltk.stem import SnowballStemmer
@@ -89,12 +89,12 @@ def filtrarStopWords(palabrasInteres):
 def main():
 
     # Se carga el archivo en un dataFrame
-    dataFrame = pd.read_csv(
-        r"NubePalabras\plebiscito.csv", encoding="utf8")
+    dataFrame = pd.read_csv(r"NubePalabras\plebiscito.csv", encoding="utf8")
     #print("El dataframe es \n")
     # print(dataFrame)
     palabrasInteres = obtenerPalabras(dataFrame)
 
+   
     limpiarStopWords = filtrarStopWords(palabrasInteres)
     print(limpiarStopWords)
     # generarNube(palabrasInteres)
