@@ -11,7 +11,7 @@ Created on 30/03/2020
 
 import matplotlib.pyplot as plt
 import pandas as pd
-
+from wordcloud import WordCloud
 from nltk.corpus import stopwords
 from nltk import word_tokenize
 from nltk.stem import SnowballStemmer
@@ -55,16 +55,13 @@ def obtenerPalabras(dataFrame):
         for palabra in palabras:
             palabrasInteres = palabrasInteres + palabra + ' '
 
-    # Remover links
-    palabrasInteres = re.sub(r"http\S+", "https", palabrasInteres)
-    # remove repeated characters
-    palabrasInteres = re.sub(r'(.)\1+', r'\1\1', palabrasInteres)
     return palabrasInteres
 
 
 def filtrarStopWords(palabrasInteres):
     # remove links from tweets
     palabrasInteres = re.sub(r"http\S+", "https", palabrasInteres)
+    palabrasInteres=palabrasInteres.replace("https","")
     # remove punctuation
     palabrasInteres = ''.join(
         [c for c in palabrasInteres if c not in non_words])
@@ -72,7 +69,7 @@ def filtrarStopWords(palabrasInteres):
     palabrasInteres = re.sub(r'(.)\1+', r'\1\1', palabrasInteres)
     important_words = []
     # tokenize
-    #tokens = word_tokenize(palabrasInteres)
+    # tokens = word_tokenize(palabrasInteres)
     tokens = palabrasInteres.split(" ")
     for word in tokens:
         if word not in spanish_stopwords:
@@ -83,24 +80,58 @@ def filtrarStopWords(palabrasInteres):
     except Exception as e:
         print(e)
         stems = ['']
-    return important_words
+    return stems
+
+
+def generarNube(palabrasInteres):
+
+    stopwords = set(spanish_stopwords)
+    nubePalabras = WordCloud(width=700, height=700,
+    background_color='white',
+    stopwords=stopwords,
+    min_font_size=10).generate(palabrasInteres)
+
+    # Se hace el gr�fico de la nube de palabras
+    # facecolor  es el color de fondo
+    plt.figure(figsize=(7, 7), facecolor=None)
+    plt.imshow(nubePalabras)
+    plt.axis("on")
+    plt.tight_layout(pad=0)
+    plt.show()
+
+
+def convertirAString(lista):
+    palabrasInteres = ""
+    # Se recorre el archivo
+
+    for palabra in lista:
+        palabrasInteres = palabrasInteres + palabra + ' '
+    return palabrasInteres
 
 
 def main():
 
     # Se carga el archivo en un dataFrame
     dataFrame = pd.read_csv(r"NubePalabras\plebiscito.csv", encoding="utf8")
-    #print("El dataframe es \n")
+    # print("El dataframe es \n")
     # print(dataFrame)
+
+    
+
     palabrasInteres = obtenerPalabras(dataFrame)
 
    
     limpiarStopWords = filtrarStopWords(palabrasInteres)
-    print(limpiarStopWords)
-    # generarNube(palabrasInteres)
+    # print(limpiarStopWords)
+
+    palabrasInteres=convertirAString(limpiarStopWords)
+
+    generarNube(palabrasInteres)
 
     # TODO para pipe acuerdese de configurar los stopwords para español
     # en esa pagina explican cualquier cosa me dice https://blog.hacemoscontactos.com/2018/08/21/analisis-de-palabras-frecuentes-usando-python/
+
+
 
 
 if __name__ == '__main__':
