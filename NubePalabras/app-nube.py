@@ -17,6 +17,7 @@ from nltk import word_tokenize
 from nltk.stem import SnowballStemmer
 import re
 from string import punctuation
+import collections
 
 
 # stopword list to use
@@ -32,14 +33,20 @@ non_words.extend(map(str, range(10)))
 
 stemmer = SnowballStemmer('spanish')
 
-
+'''
+Fundion que define el stemming del token
+'''
 def stem_tokens(tokens, stemmer):
     stemmed = []
     for item in tokens:
         stemmed.append(stemmer.stem(item))
     return stemmed
 
-
+'''
+Funcion encargada de cargar el texto de los diferentes archivos
+ 
+ @return palabrasInteres; variable con todas las palabras del texto
+'''
 def obtenerPalabras(dataFrame):
     palabrasInteres = ""
     # Se recorre el archivo
@@ -58,6 +65,13 @@ def obtenerPalabras(dataFrame):
     return palabrasInteres
 
 
+
+'''
+Funcion encargada de filtrar los stop Words eliminando palabras 
+como al, el,como,a ,y etc
+
+@return important_words; variable con el texto filtrado
+'''
 def filtrarStopWords(palabrasInteres):
     # remove links from tweets
     palabrasInteres = re.sub(r"http\S+", "https", palabrasInteres)
@@ -109,6 +123,9 @@ def convertirAString(lista):
     return palabrasInteres
 
 
+'''
+Funcion encargada de iniciar el programa
+'''
 def main():
 
     # Se carga el archivo en un dataFrame
@@ -119,14 +136,33 @@ def main():
     
 
     palabrasInteres = obtenerPalabras(dataFrame)
-
-   
     limpiarStopWords = filtrarStopWords(palabrasInteres)
     # print(limpiarStopWords)
 
     palabrasInteres=convertirAString(limpiarStopWords)
 
     generarNube(palabrasInteres)
+
+    # Ordena los datos del mas repetido al menor
+    listaRepeticiones =collections.Counter(limpiarStopWords)
+    # Permite sacar el numero de elemntos que necesite de la lista 
+    elemento=listaRepeticiones.most_common(9)
+    
+    print(elemento[0])
+    #print(limpiarStopWords)
+    # generarNube(palabrasInteres)
+
+
+    fig = plt.figure(u'Gráfica de barras') # Figure
+    ax = fig.add_subplot(111) # Axes
+    nombres = [listaRepeticiones.most_common(1),'Ana','Pablo','Ximena','Jorge']
+    datos = [650,88,78,94,93]
+    xx = range(len(datos))
+    ax.bar(xx, datos, width=0.8, align='center')
+    ax.set_xticks(xx)
+    ax.set_xticklabels(nombres)
+
+    plt.show()
 
     # TODO para pipe acuerdese de configurar los stopwords para español
     # en esa pagina explican cualquier cosa me dice https://blog.hacemoscontactos.com/2018/08/21/analisis-de-palabras-frecuentes-usando-python/
