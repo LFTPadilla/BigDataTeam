@@ -75,7 +75,7 @@ como al, el,como,a ,y etc
 def filtrarStopWords(palabrasInteres):
     # remove links from tweets
     palabrasInteres = re.sub(r"http\S+", "https", palabrasInteres)
-    palabrasInteres=palabrasInteres.replace("https","")
+    palabrasInteres=palabrasInteres.replace(" https "," ")
     # remove punctuation
     palabrasInteres = ''.join(
         [c for c in palabrasInteres if c not in non_words])
@@ -85,6 +85,8 @@ def filtrarStopWords(palabrasInteres):
     # tokenize
     # tokens = word_tokenize(palabrasInteres)
     tokens = palabrasInteres.split(" ")
+    tokens=[s for s in tokens if s != '']
+
     for word in tokens:
         if word not in spanish_stopwords:
             important_words.append(word)
@@ -123,6 +125,24 @@ def convertirAString(lista):
     return palabrasInteres
 
 
+def generarDiagramaDeBarras(limpiarStopWords):
+    # Ordena los datos del mas repetido al menor
+    listaRepeticiones =collections.Counter(limpiarStopWords)
+    # Permite sacar el numero de elemntos que necesite de la lista 
+    elemento=listaRepeticiones.most_common(9)
+    fig = plt.figure(u'Gráfica de barras') # Figure
+    ax = fig.add_subplot(111) # Axes
+    #obtiene los nombres de la lista de tuplas
+    nombres = [s[0] for s in elemento]
+    #obtiene los datos o la cantidad de veces que se repiten las palabras
+    datos = [s[1] for s in elemento]
+    xx = range(len(datos))
+    ax.bar(xx, datos, width=0.8, align='center')
+    ax.set_xticks(xx)
+    ax.set_xticklabels(nombres)
+
+    plt.show()
+
 '''
 Funcion encargada de iniciar el programa
 '''
@@ -143,26 +163,8 @@ def main():
 
     generarNube(palabrasInteres)
 
-    # Ordena los datos del mas repetido al menor
-    listaRepeticiones =collections.Counter(limpiarStopWords)
-    # Permite sacar el numero de elemntos que necesite de la lista 
-    elemento=listaRepeticiones.most_common(9)
+    generarDiagramaDeBarras(limpiarStopWords)
     
-    print(elemento[0])
-    #print(limpiarStopWords)
-    # generarNube(palabrasInteres)
-
-
-    fig = plt.figure(u'Gráfica de barras') # Figure
-    ax = fig.add_subplot(111) # Axes
-    nombres = [listaRepeticiones.most_common(1),'Ana','Pablo','Ximena','Jorge']
-    datos = [650,88,78,94,93]
-    xx = range(len(datos))
-    ax.bar(xx, datos, width=0.8, align='center')
-    ax.set_xticks(xx)
-    ax.set_xticklabels(nombres)
-
-    plt.show()
 
     # TODO para pipe acuerdese de configurar los stopwords para español
     # en esa pagina explican cualquier cosa me dice https://blog.hacemoscontactos.com/2018/08/21/analisis-de-palabras-frecuentes-usando-python/
@@ -172,3 +174,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
