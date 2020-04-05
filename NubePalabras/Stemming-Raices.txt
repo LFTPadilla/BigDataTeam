@@ -1,0 +1,10 @@
+Se hizo su previa consulta he investigacion sobre las raices de
+las palabras y lo que se pudo encontrar fueron algunos metodos que
+trataban de encontrar dichas raicez pero debido a la complejidad 
+del lenguaje es muy dificl lograr hacer esa transformacion
+en cada una de ellas, ya sea porque se encuentran en algun tiempo
+especifico o por su estructura dramatica. Lo que lograba hacer 
+el metodo era eliminar las ultimas 2 o 3 letras de cada palabra 
+tratando de cumplir con el objetivo, pero claramente en algunas 
+se eliminaba mas de lo necesario y en otras no era suficiente 
+esta eliminacion.
