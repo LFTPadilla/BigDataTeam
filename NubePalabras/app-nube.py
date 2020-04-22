@@ -24,7 +24,6 @@ import collections
 spanish_stopwords = stopwords.words('spanish')
 # spanish stemmer
 stemmer = SnowballStemmer('spanish')
-
 # punctuation to remove
 non_words = list(punctuation)
 # we add spanish punctuation
