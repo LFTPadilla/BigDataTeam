@@ -62,7 +62,8 @@ Funcion que realiza los diferentes tipos de graficas
 def graficar():
 
     df = pd.read_csv(r"Actividad2-limpieza/info/comprar_alquilarConRuido.csv")
-    '''
+    
+    #Grafico de  hijos respecto al estado civil Categorica
     estado_civil=np.array(df['estado_civil'])
     hijos=np.array(df['hijos'])
     plt.bar(estado_civil,hijos)
@@ -71,7 +72,48 @@ def graficar():
     plt.ylabel("hijos")
     plt.show()
 
+    #Cantidad de personas por estado civil categorico
+    estado_civil=np.array(df['estado_civil'])
+    plt.title('estado_civil')
+    plt.hist(estado_civil, bins = 60)
+    plt.xlabel("estado civil")
+    plt.ylabel("Cantidad de usuarios por estado civil")
+    plt.grid(True)
+    plt.show()
+    plt.clf()
 
+    #cantidad de personas con cada tipo de trabajo categorico
+    trabajo=np.array(df['trabajo'])
+    trabajoT=np.array([0,0,0,0,0,0,0,0])
+    for i in range(0,len(trabajo)):
+        if(trabajo[i] ==0):
+            trabajoT[0]+=1
+        if(trabajo[i] ==2):
+            trabajoT[1]+=1
+        if(trabajo[i] ==3):
+            trabajoT[2]+=1
+        if(trabajo[i] ==4):
+            trabajoT[3]+=1
+        if(trabajo[i] ==5):
+            trabajoT[4]+=1
+        if(trabajo[i] ==6):
+            trabajoT[5]+=1
+        if(trabajo[i] ==7):
+            trabajoT[6]+=1
+        if(trabajo[i] ==8):
+            trabajoT[7]+=1
+    plt.plot(trabajoT)
+    plt.title("Grafica")
+    plt.xlabel("Tipo de trabajo")
+    plt.ylabel("Personas")
+    plt.show()
+
+
+
+
+
+
+    #Grafico de personas por precio de la vivienda Numerico
     vivienda=np.array(df['vivienda'])
     plt.title('vivienda')
     plt.hist(vivienda, bins = 60)
@@ -80,55 +122,72 @@ def graficar():
     plt.grid(True)
     plt.show()
     plt.clf()
-    '''
-
-
-
-    ingresos=np.array(df['ingresos'])
-    i=np.array([0,0,0,0])
-    for i in range(0,len(ingresos)):
-        if(ingresos[i]>=0 or ingresos[i]<2000  ):
-            i[:0]=str(1)
-        if(ingresos[i]>= 2000 or ingresos[i]<4000  ):
-            i[:1]=i[:1]+1
-        if(ingresos[i]>=4000 or ingresos[i]<6000  ):
-            i[:2]=i[:2]+1
-        if(ingresos[i]>=6000 or ingresos[i]<8000  ):
-            i[:3]=i[:3]+1
-
-    print(i)
-   
-    '''
-    for i in range(0,len(ingresos)):
-        if(comprar[i]==1):
-            ingresos
     
-    '''
 
-    #print(gastosComunes)
-    '''
-    hijos=((0,1,2,3))
-    cantidadHijos=((12,23,10,2))
+    #Grafico porcentaje de personas por rangos de ingresos Numerico
+    rangos=(("menor 4000","ingresos entre 4000 y 5000","5000 >= ingresos < 6000","mayor 6000"))
+    ingresos=np.array(df['ingresos'])
+    arreglo=np.array([0,0,0,0])
+    for i in range(0,len(ingresos)):
+        if(ingresos[i] < 4000):
+            arreglo[0]+=1
+        if(ingresos[i] >= 4000 and ingresos[i] < 5000):
+            arreglo[1]+=1
+        if(ingresos[i] >= 5000 and ingresos[i] < 6000):
+            arreglo[2]+=1
+        if(ingresos[i] >= 6000):
+            arreglo[3]+=1
     colores=('red','blue','green','yellow')
-    plt.pie(cantidadHijos, colors=colores, labels=hijos,autopct='%1.1f%%')
+    plt.pie(arreglo, colors=colores, labels=rangos,autopct='%1.1f%%')
     plt.axis('equal')
     plt.title("Grafico Pastel")
+    plt.show()   
+        
+    
+    # numero de personas con un rango de gastos numerico
+    gastoscomunes=np.array(df['gastos_comunes'])
+    rango = ("menos 300","gatos entre 300 y 600","gatos entre 600 y 900", "gatos entre 900 y 1200","mas de 1200")
+    posicion_y = np.arange(len(rango))
+
+    arreglo=np.array([0,0,0,0,0])
+    for i in range(0,len(gastoscomunes)):
+        if(gastoscomunes[i] < 300):
+            arreglo[0]+=1
+        if(gastoscomunes[i] >= 300 and gastoscomunes[i] < 600):
+            arreglo[1]+=1
+        if(gastoscomunes[i] >= 600 and gastoscomunes[i] < 900):
+            arreglo[2]+=1
+        if(gastoscomunes[i] >= 900 and gastoscomunes[i] < 1200):
+            arreglo[3]+=1
+        if(gastoscomunes[i] >= 1200):
+            arreglo[4]+=1
+
+    plt.barh(posicion_y, arreglo, align = "center")
+    plt.yticks(posicion_y, rango)
+    plt.xlabel('Unidades vendidas')
+    plt.title("Gastos")
+    plt.show()
+   
+
+    #Numero de personas que ahorran en cada rango
+    rangos=(("menor 300"," entre 300 y 600"," entre 600 y 900","mayor 900"))
+    ahorros=np.array(df['ahorros'])
+    arreglo=np.array([0,0,0,0])
+    for i in range(0,len(ahorros)):
+        if(ahorros[i] < 45000):
+            arreglo[0]+=1
+        if(ahorros[i] >= 45000 and ahorros[i] < 55000):
+            arreglo[1]+=1
+        if(ahorros[i] >= 55000 and ahorros[i] < 65000):
+            arreglo[2]+=1
+        if(ahorros[i] >= 65000 ):
+            arreglo[3]+=1
+    plt.bar(rangos,arreglo)
+    plt.title("Ahorro")
+    plt.xlabel("ahorros")
+    plt.ylabel("persona")
     plt.show()
 
-
-    plt.plot(hijos,cantidadHijos)
-    plt.title("Grafica")
-    plt.xlabel("X")
-    plt.ylabel("T")
-    plt.show()
-
-
-    plt.bar(hijos,cantidadHijos)
-    plt.title("Grafica barras ")
-    plt.xlabel("X")
-    plt.ylabel("T")
-    plt.show()
-    '''
     
 
 '''
