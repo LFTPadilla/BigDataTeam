@@ -81,7 +81,7 @@ def graficar():
     plt.show()
 
     # 2 Cantidad de personas por estado civil categorico
-    
+
     df['estado_civil'].plot.hist()
     plt.xlabel("estado civil")
     plt.show()

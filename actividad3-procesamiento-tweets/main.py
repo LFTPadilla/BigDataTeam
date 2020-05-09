@@ -1,3 +1,5 @@
+
+
 import preprocessor as p
 import tweepy
 import pandas as pd
@@ -7,6 +9,10 @@ import cleaning
 import analizadorSentimientos
 import charts
 import arbol
+import pandas as pd 
+import numpy as np
+from textblob import TextBlob
+
 
 
 class TweetPreprocessor(tweepy.StreamListener):
@@ -23,7 +29,9 @@ class TweetPreprocessor(tweepy.StreamListener):
 
         # se configura el procesador de tweets para descartar
         # URLs y palabras reservadas
+
         p.set_options(p.OPT.URL, p.OPT.RESERVED)
+
         super().__init__(api)  # efectua el llamado al init de la superclase
 
     def on_status(self, status):
@@ -51,8 +59,10 @@ class TweetPreprocessor(tweepy.StreamListener):
         # print("Antes del preprocessor")
         # print(tweet_text)
 
+
         tweet_text = p.clean(tweet_text)  # limpia el tweet
         tweet_text = cleaning.clean_tweets(tweet_text)  # elimina stopwords emoticones hashtags
+
 
         self.tweets.append(tweet_text)
 
@@ -93,8 +103,11 @@ def procesar_tweets(tweets, limite, criteriosBusqueda, api):
     stream.filter(track=criteriosBusqueda, languages=['en'], is_async=False)
 
 
+
 def main():
+
     api = autenticarse()
+
 
     # Se fija el criterio de busqueda
     criteriosBusqueda = ["coronavirus", "covid-19", "covid19", "covid", "quarantine", "lockdown"]
@@ -104,15 +117,16 @@ def main():
     tweets = []
     # se extraen y limpian los tweets
     procesar_tweets(tweets, limite, criteriosBusqueda, api)
-    # diccionario de sentimientos donde se separaran los tweets por sentimiento
+
+
+    #diccionario de sentimientos donde se separaran los tweets por sentimiento
     diccionarioSentimientos = {'positive': 0, 'negative': 0, 'neutral': 0}
 
-    # data={'tweet':[],'clase':[]}
-    df = pd.DataFrame(columns=['tweet', 'clase'])
+    df=pd.DataFrame ( columns = ['tweet','clase'])
 
-    # se analiza el sentimiento de cada tweet
+    #se analiza el sentimiento de cada tweet
     for tweet in tweets:
-        df = analizadorSentimientos.analizar(diccionarioSentimientos, tweet, df)
+        df=analizadorSentimientos.analizar(diccionarioSentimientos,tweet,df)
 
     df.to_csv(r'tweets2.csv', index=False)
     arbol.generarArbol(df)
@@ -121,15 +135,19 @@ def main():
     print('Negativo:', diccionarioSentimientos['negative'])
     print(' Neutro:', diccionarioSentimientos['neutral'])
 
-    # palabras = ""
-    #
-    # #se almacenan todos los tweeets en un solo string para hacer la nube de palabras
-    # for tw in tweets:
-    #     tw=tw.lower()
-    #     palabras= palabras+" "+tw
-    #
-    # charts.generarNube(palabras)
+    palabras = ""
 
+
+    
+    #se almacenan todos los tweeets en un solo string para hacer la nube de palabras
+    for tw in tweets:
+        tw=tw.lower()
+        palabras= palabras+" "+tw
+
+    charts.generarNube(palabras)
+    charts.graficas(palabras,df)
+    
+    
 
 # Metodo main
 if __name__ == '__main__':
