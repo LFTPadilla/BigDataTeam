@@ -1,10 +1,12 @@
 import preprocessor as p
 import tweepy
+import pandas as pd
 
 import keys
 import cleaning
 import analizadorSentimientos
 import charts
+import arbol
 
 
 class TweetPreprocessor(tweepy.StreamListener):
@@ -21,16 +23,16 @@ class TweetPreprocessor(tweepy.StreamListener):
 
         # se configura el procesador de tweets para descartar
         # URLs y palabras reservadas
-        p.set_options(p.OPT.URL, p.OPT.RESERVED) 
+        p.set_options(p.OPT.URL, p.OPT.RESERVED)
         super().__init__(api)  # efectua el llamado al init de la superclase
 
     def on_status(self, status):
         """Llamado cuando Tweeter envia un nuevo tweet"""
 
         # Obtiene el texto del tweet
-        try:  
+        try:
             tweet_text = status.extended_tweet["full_text"]
-        except: 
+        except:
             tweet_text = status.text
 
         # Ignora retweets
@@ -41,27 +43,27 @@ class TweetPreprocessor(tweepy.StreamListener):
         count = 0
         for topic in self.topics:
             if topic.lower() in tweet_text.lower():
-                count = count+1
+                count = count + 1
         if count == 0:
             return
-        
+
         # Obtiene el texto del tweet
         # print("Antes del preprocessor")
         # print(tweet_text)
 
         tweet_text = p.clean(tweet_text)  # limpia el tweet
-        tweet_text = cleaning.clean_tweets(tweet_text) #elimina stopwords emoticones hashtags
+        tweet_text = cleaning.clean_tweets(tweet_text)  # elimina stopwords emoticones hashtags
 
         self.tweets.append(tweet_text)
 
-            
         # Despliega el tweet
-        #print("despues del preprocessor")
-        #print(f'{sentiment} {status.user.screen_name}: {tweet_text}\n')
-        
+        # print("despues del preprocessor")
+        # print(f'{sentiment} {status.user.screen_name}: {tweet_text}\n')
+
         self.tweet_count += 1  # track number of tweets processed
 
         # Si se llega a  TWEET_LIMIT, se retorna falso para terminar la transmision
+        print(self.tweet_count)
         return self.tweet_count <= self.TWEET_LIMIT
 
 
@@ -69,65 +71,66 @@ def autenticarse():
     # Se crea y se configura OAuthHandler para autenticarse en Twitter
     auth = tweepy.OAuthHandler(keys.consumer_key,
                                keys.consumer_secret)
-    
+
     auth.set_access_token(keys.access_token,
                           keys.access_token_secret)
-    
+
     # Se configura el API
-    api = tweepy.API(auth, wait_on_rate_limit=True, 
+    api = tweepy.API(auth, wait_on_rate_limit=True,
                      wait_on_rate_limit_notify=True)
-                 
+
     return api
 
 
-def procesar_tweets(tweets,limite, criteriosBusqueda, api ):
+def procesar_tweets(tweets, limite, criteriosBusqueda, api):
     sentiment_listener = TweetPreprocessor(api,
-        tweets, criteriosBusqueda, limite)
+                                           tweets, criteriosBusqueda, limite)
 
     # Se configura el stream
     stream = tweepy.Stream(auth=api.auth, listener=sentiment_listener, tweet_mode='extended')
 
     # si filtran los tweets en espanol que tienen el criterio de busqueda
-    stream.filter(track=criteriosBusqueda, languages=['en'], is_async=False)  
+    stream.filter(track=criteriosBusqueda, languages=['en'], is_async=False)
 
 
 def main():
-    api= autenticarse()
-                 
+    api = autenticarse()
+
     # Se fija el criterio de busqueda
     criteriosBusqueda = ["coronavirus", "covid-19", "covid19", "covid", "quarantine", "lockdown"]
-    #se fija la cantidad de tweets a extraer
-    limite = int(50)  #cantidad e tweets para contar
-    #lista donde se almacenaran los tweets
+    # se fija la cantidad de tweets a extraer
+    limite = int(3000)  # cantidad e tweets para contar
+    # lista donde se almacenaran los tweets
     tweets = []
-    #se extraen y limpian los tweets
+    # se extraen y limpian los tweets
     procesar_tweets(tweets, limite, criteriosBusqueda, api)
-    #diccionario de sentimientos donde se separaran los tweets por sentimiento
+    # diccionario de sentimientos donde se separaran los tweets por sentimiento
     diccionarioSentimientos = {'positive': 0, 'negative': 0, 'neutral': 0}
 
-    #se analiza el sentimiento de cada tweet
+    # data={'tweet':[],'clase':[]}
+    df = pd.DataFrame(columns=['tweet', 'clase'])
+
+    # se analiza el sentimiento de cada tweet
     for tweet in tweets:
-        analizadorSentimientos.analizar(diccionarioSentimientos,tweet)
+        df = analizadorSentimientos.analizar(diccionarioSentimientos, tweet, df)
 
-
+    df.to_csv(r'tweets2.csv', index=False)
+    arbol.generarArbol(df)
     print(f'Analisis de sentimientos de los tweets "{criteriosBusqueda}"')
     print('Positivo:', diccionarioSentimientos['positive'])
     print('Negativo:', diccionarioSentimientos['negative'])
     print(' Neutro:', diccionarioSentimientos['neutral'])
 
-    palabras = ""
+    # palabras = ""
+    #
+    # #se almacenan todos los tweeets en un solo string para hacer la nube de palabras
+    # for tw in tweets:
+    #     tw=tw.lower()
+    #     palabras= palabras+" "+tw
+    #
+    # charts.generarNube(palabras)
 
-    #se almacenan todos los tweeets en un solo string para hacer la nube de palabras
-    for tw in tweets:
-        tw=tw.lower()
-        palabras= palabras+" "+tw
-
-    charts.generarNube(palabras)
 
 # Metodo main
 if __name__ == '__main__':
     main()
-
-
-
-
