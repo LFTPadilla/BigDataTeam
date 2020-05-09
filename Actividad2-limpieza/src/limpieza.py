@@ -14,7 +14,7 @@ Funcion que nos permite conocer los tipos de datos que tenemos en el dataset
 
 
 def describirDatos():
-    df = pd.read_csv(r"Actividad2-limpieza/info/comprar_alquilarConRuido.csv")
+    df = pd.read_csv("../info/comprar_alquilarConRuido.csv")
     df = df.astype({"estado_civil": str, "trabajo": str, "comprar": str})
 
     print("-------TIPOS DE VARIABLES-------")
@@ -39,7 +39,7 @@ def limpieza():
     limpiezaNegativos.limpiar()
 
     df = pd.read_csv(
-        r"Actividad2-limpieza/info/comprar_alquilarSinNegativos.csv")
+        "../info/comprar_alquilarSinNegativos.csv")
 
     df = df.astype({"estado_civil": str, "trabajo": str, "comprar": str})
     df = df.fillna(df.mean())
@@ -60,7 +60,7 @@ def limpieza():
 
     #Se observa que ningún dato está es considerable como outlier por lo tanto no se elimina nada
     #se almacena el data set ya completamente limpio
-    df.to_csv(r'Actividad2-limpieza/info/comprar_alquilarLimpio.csv',index=False)
+    df.to_csv('../info/comprar_alquilarLimpio.csv',index=False)
 
 '''
 Funcion que realiza los diferentes tipos de graficas
@@ -70,7 +70,7 @@ Funcion que realiza los diferentes tipos de graficas
 def graficar():
 
     df = pd.read_csv(
-        r"Actividad2-limpieza/info/comprar_alquilarSinNegativos.csv")
+        "../info/comprar_alquilarSinNegativos.csv")
 
     #df = df.astype({"estado_civil": str, "trabajo": str, "comprar": str})
 
@@ -78,13 +78,13 @@ def graficar():
     
     df["comprar"].plot.kde()
     plt.xlabel("comprar")
-    plt.show()
+    plt.show(block=True)
 
     # 2 Cantidad de personas por estado civil categorico
 
     df['estado_civil'].plot.hist()
     plt.xlabel("estado civil")
-    plt.show()
+    plt.show(block=True)
 
     # 3 cantidad de personas con cada tipo de trabajo categorico
     trabajo = np.array(df['trabajo'])
@@ -110,7 +110,7 @@ def graficar():
     plt.title("Grafica")
     plt.xlabel("Tipo de trabajo")
     plt.ylabel("Frecuencia")
-    plt.show()
+    plt.show(block=True)
 
     # 4 Grafico de personas por precio de la vivienda Numerico
     vivienda = np.array(df['vivienda'])
@@ -119,7 +119,7 @@ def graficar():
     plt.xlabel("Costo vivienda")
     plt.ylabel("Frecuencia")
     plt.grid(True)
-    plt.show()
+    plt.show(block=True)
     plt.clf()
 
     # 5 Grafico porcentaje de personas por rangos de ingresos Numerico
@@ -140,7 +140,7 @@ def graficar():
     plt.pie(arreglo, colors=colores, labels=rangos, autopct='%1.1f%%')
     plt.axis('equal')
     plt.title("Grafico Ingresos")
-    plt.show()
+    plt.show(block=True)
 
     # 6 numero de personas con un rango de gastos numerico
     gastoscomunes = np.array(df['gastos_comunes'])
@@ -165,13 +165,13 @@ def graficar():
     plt.yticks(posicion_y, rango, rotation=45)
     plt.xlabel('Frecuencia')
     plt.title("Gastos")
-    plt.show()
+    plt.show(block=True)
 
     # 7 Numero de personas que ahorran en cada rango
     sns.lmplot('ingresos', 'pago_coche', df, hue='comprar', fit_reg=False)
     fig = plt.gcf()
     fig.set_size_inches(15, 10)
-    plt.show()
+    plt.show(block=True)
 
 
 '''

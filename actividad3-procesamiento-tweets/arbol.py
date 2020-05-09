@@ -7,7 +7,7 @@ from sklearn import metrics  # Import scikit-learn metrics module for accuracy c
 import pydotplus
 from sklearn.tree import export_graphviz
 import numpy as np
-from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
+from sklearn.metrics import classification_report, confusion_matrix, accuracy_score,cohen_kappa_score
 
 
 def generarArbol(df):
@@ -24,7 +24,7 @@ def generarArbol(df):
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3,
                                                         random_state=1)  # 70% training and 30% test
     # Create Decision Tree classifer object
-    clf = DecisionTreeClassifier()
+    clf = DecisionTreeClassifier(class_weight="balanced")
 
     # Train Decision Tree Classifer
     clf = clf.fit(X_train, y_train)
@@ -41,6 +41,7 @@ def generarArbol(df):
     print(classification_report(y_test, y_pred))
     # Model Accuracy, how often is the classifier correct?
     print("Accuracy:", accuracy_score(y_test, y_pred))
+    print("Kappa:", cohen_kappa_score(y_test, y_pred))
 
 
 # dirname = os.path.dirname(__file__)
