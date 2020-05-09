@@ -1,3 +1,5 @@
+
+
 import preprocessor as p
 import tweepy
 
@@ -5,6 +7,11 @@ import keys
 import cleaning
 import analizadorSentimientos
 import charts
+import pandas as pd 
+import numpy as np
+from textblob import TextBlob
+
+
 
 
 class TweetPreprocessor(tweepy.StreamListener):
@@ -21,7 +28,7 @@ class TweetPreprocessor(tweepy.StreamListener):
 
         # se configura el procesador de tweets para descartar
         # URLs y palabras reservadas
-        p.set_options(p.OPT.URL, p.OPT.RESERVED) 
+        #p.set_options(p.OPT.URL, p.OPT.RESERVED) 
         super().__init__(api)  # efectua el llamado al init de la superclase
 
     def on_status(self, status):
@@ -49,7 +56,7 @@ class TweetPreprocessor(tweepy.StreamListener):
         # print("Antes del preprocessor")
         # print(tweet_text)
 
-        tweet_text = p.clean(tweet_text)  # limpia el tweet
+        #tweet_text = p.clean(tweet_text)  # limpia el tweet
         tweet_text = cleaning.clean_tweets(tweet_text) #elimina stopwords emoticones hashtags
 
         self.tweets.append(tweet_text)
@@ -91,9 +98,10 @@ def procesar_tweets(tweets,limite, criteriosBusqueda, api ):
     stream.filter(track=criteriosBusqueda, languages=['en'], is_async=False)  
 
 
+
 def main():
     api= autenticarse()
-                 
+      
     # Se fija el criterio de busqueda
     criteriosBusqueda = ["coronavirus", "covid-19", "covid19", "covid", "quarantine", "lockdown"]
     #se fija la cantidad de tweets a extraer
@@ -102,12 +110,15 @@ def main():
     tweets = []
     #se extraen y limpian los tweets
     procesar_tweets(tweets, limite, criteriosBusqueda, api)
+
     #diccionario de sentimientos donde se separaran los tweets por sentimiento
     diccionarioSentimientos = {'positive': 0, 'negative': 0, 'neutral': 0}
 
+    df=pd.DataFrame ( columns = ['tweet','clase'])
+
     #se analiza el sentimiento de cada tweet
     for tweet in tweets:
-        analizadorSentimientos.analizar(diccionarioSentimientos,tweet)
+        df=analizadorSentimientos.analizar(diccionarioSentimientos,tweet,df)
 
 
     print(f'Analisis de sentimientos de los tweets "{criteriosBusqueda}"')
@@ -117,12 +128,17 @@ def main():
 
     palabras = ""
 
+
+    
     #se almacenan todos los tweeets en un solo string para hacer la nube de palabras
     for tw in tweets:
         tw=tw.lower()
         palabras= palabras+" "+tw
 
     charts.generarNube(palabras)
+    charts.graficas(palabras,df)
+    
+    
 
 # Metodo main
 if __name__ == '__main__':
